@@ -1,18 +1,38 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\AuthController;
 
-Route::get('/login',[AuthController::class,'loginPage'])->name('login');
-Route::post('/login',[AuthController::class,'login']);
+/*
+|--------------------------------------------------------------------------
+| Public Routes
+|--------------------------------------------------------------------------
+*/
 
-Route::get('/register',[AuthController::class,'registerPage']);
-Route::post('/register',[AuthController::class,'register']);
+// Root route – VERY IMPORTANT (fixes 404 on /)
+Route::get('/', function () {
+    return redirect()->route('login');
+});
 
-Route::post('/logout',[AuthController::class,'logout']);
+// Login
+Route::get('/login', [AuthController::class, 'loginPage'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 
-Route::get('/dashboard', function(){
-    return view('dashboard');
-})->middleware('auth');
+// Register
+Route::get('/register', [AuthController::class, 'registerPage'])->name('register');
+Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
 
+// Logout
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+/*
+|--------------------------------------------------------------------------
+| Protected Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+});
